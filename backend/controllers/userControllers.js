@@ -89,12 +89,63 @@ const userLogin = async (req, res) => {
   }
 };
 
-const userProfile = (req, res) => {
-  return res.send("everything is ok");
+const userProfile = async (req, res) => {
+  try {
+    const token = req.cookies.romatoToken;
+
+    if (!token) {
+      return res
+        .status(401)
+        .send({ message: "Invalid Token or Token Not Found" });
+    }
+
+    const verifiedUser = await verifyAndFindUser(token);
+
+    if (!verifiedUser) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User found", user: verifiedUser });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const userUpdate = (req, res) => {
-  return res.send("everything is ok");
+async function verifyAndFindUser(token) {
+  const verifyToken = await jwt.verify(token, process.env.JWT_SECRET);
+  const findUserLean = await User.findById(verifyToken._id).lean();
+  return findUserLean;
+}
+
+const userUpdate = async (req, res) => {
+  try {
+    const token = req.cookies.romatoToken;
+
+    if (!token) {
+      return res
+        .status(401)
+        .send({ message: "Invalid Token or Token Not Found" });
+    }
+
+    const { fullName, phone } = req.body;
+
+    if (!fullName || !phone) {
+      return res.status(400).json({ message: "Atleast one field is required" });
+    }
+
+    const verifyToken = await jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!verifyToken) {
+      return res.status(401).json({ message: "Invalid Token" });
+    }
+
+    const updateUser = await User.findByIdAndUpdate(verifyToken._id, {
+      fullName: fullName,
+      phone: phone,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 module.exports = { userRegister, userLogin, userProfile, userUpdate };
