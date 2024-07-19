@@ -1,0 +1,8 @@
+1/ create a backend folder
+2/ open in vs code
+2/ open the terminal then
+3/ run command - npm init
+4/ run command - npm i express
+5/ create a file name - index.js
+6/ create folders - controllers, routes, models, utils
+7/ setup express server in index file
