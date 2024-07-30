@@ -1,20 +1,21 @@
-.login {
+.signup {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   background-color: rgb(246, 232, 235);
-  height: 100vh;
+  padding: 5rem 0;
 }
 
-.loginContainer {
+.signupContainer {
   background-color: #fba5a4;
   padding: 2rem;
   border-radius: 0.5rem;
-  width: 35%;
+  width: 40%;
 }
 
-.loginContainer h1 {
+.signupContainer h1 {
   font-size: 2rem;
   color: #44413c;
   font-weight: 600;
@@ -31,18 +32,18 @@
   color: #44413c;
 }
 
-.loginForm form h3 {
+.signupForm form h3 {
   font-size: 1.5rem;
   font-weight: 500;
   color: #44413c;
   margin: 0 0 0.5rem 0;
 }
 
-.loginForm form h3 span {
+.signupForm form h3 span {
   color: red;
 }
 
-.loginForm form input {
+.signupForm form input {
   outline: none;
   border-radius: 0.3rem;
   border: none;
@@ -52,7 +53,7 @@
   margin: 0 0 1rem 0;
 }
 
-.loginForm form button {
+.signupForm form button {
   width: 100%;
   background-color: #44413c;
   color: white;

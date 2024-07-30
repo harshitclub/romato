@@ -12,7 +12,38 @@ import ios from "../../assets/ios.webp";
 import phone from "../../assets/phone.avif";
 import romato from "../../assets/zomatoFooter.avif";
 
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 const Home = () => {
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+  });
+  const getUser = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/user/profile", {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log(result.user);
+      setUser({
+        name: result.user.fullName,
+        email: result.user.email,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   return (
     <main>
       <section className="heroSection">
@@ -28,12 +59,20 @@ const Home = () => {
               <li>
                 <a href="#">Add Restaurant</a>
               </li>
-              <li>
-                <a href="#">Login</a>
-              </li>
-              <li>
-                <a href="#">Signup</a>
-              </li>
+              {user.name === "" ? (
+                <>
+                  <li>
+                    <Link to="/login">Login</Link>
+                  </li>
+                  <li>
+                    <a href="#">Signup</a>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link to="/profile">{user.name}</Link>
+                </li>
+              )}
             </ul>
           </div>
         </nav>

@@ -16,7 +16,7 @@ const userRegister = async (req, res) => {
     const checkExistingUser = await User.findOne({ email: email });
 
     if (checkExistingUser) {
-      return res.status(406).send({ message: "Email already in use" });
+      return res.status(406).json({ message: "Email already in use" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ const userRegister = async (req, res) => {
 
     await newUser.save();
 
-    return res.status(201).send({
+    return res.status(201).json({
       message: "User registered successfully",
       success: true,
       user: newUser,
@@ -47,13 +47,13 @@ const userLogin = async (req, res) => {
     if (!email && !password) {
       return res
         .status(406)
-        .send({ message: "email and password must be required" });
+        .json({ message: "email and password must be required" });
     }
     // check if email already exists in database or not
     const checkExistingUser = await User.findOne({ email: email });
 
     if (!checkExistingUser) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
     const checkPassword = await bcrypt.compare(
       password,
@@ -61,7 +61,7 @@ const userLogin = async (req, res) => {
     );
 
     if (!checkPassword) {
-      return res.status(401).send({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const tokenData = {
@@ -79,7 +79,7 @@ const userLogin = async (req, res) => {
       httpOnly: true,
     });
 
-    return res.send({
+    return res.json({
       message: "Logged In",
       success: true,
       user: checkExistingUser,
@@ -88,21 +88,19 @@ const userLogin = async (req, res) => {
     console.log(error);
   }
 };
-
 const userProfile = async (req, res) => {
   try {
     const token = req.cookies.romatoToken;
-
     if (!token) {
       return res
         .status(401)
-        .send({ message: "Invalid Token or Token Not Found" });
+        .json({ message: "Invalid Token or Token Not Found" });
     }
 
     const verifiedUser = await verifyAndFindUser(token);
 
     if (!verifiedUser) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     return res.status(200).json({ message: "User found", user: verifiedUser });
@@ -124,25 +122,29 @@ const userUpdate = async (req, res) => {
     if (!token) {
       return res
         .status(401)
-        .send({ message: "Invalid Token or Token Not Found" });
+        .json({ message: "Invalid Token or Token Not Found" });
     }
 
     const { fullName, phone } = req.body;
 
-    if (!fullName || !phone) {
+    if (!fullName && !phone) {
       return res.status(400).json({ message: "Atleast one field is required" });
     }
 
-    const verifyToken = await jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!verifyToken) {
+    const verifiedUser = await jwt.verify(token, process.env.JWT_SECRET);
+    if (!verifiedUser) {
       return res.status(401).json({ message: "Invalid Token" });
     }
+    const { _id } = verifiedUser;
 
-    const updateUser = await User.findByIdAndUpdate(verifyToken._id, {
+    const updateUser = await User.findByIdAndUpdate(_id, {
       fullName: fullName,
       phone: phone,
     });
+
+    return res
+      .status(200)
+      .json({ message: "Profile updated", user: updateUser });
   } catch (error) {
     console.log(error);
   }
