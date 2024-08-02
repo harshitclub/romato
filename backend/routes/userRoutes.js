@@ -4,6 +4,8 @@ const {
   userLogin,
   userProfile,
   userUpdate,
+  logout,
+  changePassword,
 } = require("../controllers/userControllers");
 const jwt = require("jsonwebtoken");
 const { isLogin } = require("../middleware/auth");
@@ -19,5 +21,7 @@ userRoute.get(
   userProfile
 );
 userRoute.patch("/update", userUpdate);
+userRoute.patch("/change-password", isLogin, changePassword);
+userRoute.get("/logout", isLogin, logout);
 
 module.exports = userRoute;

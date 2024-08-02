@@ -40,6 +40,13 @@
 }
 
 .profileContainer button {
+  outline: none;
+  border-radius: 0.3rem;
+  border: none;
+  padding: 1rem 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  margin: 0 0 1rem 0;
   background-color: #44413c;
   padding: 0.5rem;
   border-radius: 0.2rem;
@@ -54,4 +61,45 @@
 .profileContainer button:hover {
   background-color: #35332f;
   transition: 0.3s all ease-in-out;
+}
+
+.updateContainer,
+.cPassContainer {
+  border-bottom: 1px solid #44413c;
+  padding: 0 0 1rem 0;
+  margin: 0 0 1rem 0;
+}
+
+.updateContainer h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #44413c;
+  margin: 0 0 0.5rem 0;
+}
+
+.updateContainer input {
+  outline: none;
+  border-radius: 0.3rem;
+  border: none;
+  padding: 1rem 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  margin: 0 0 1rem 0;
+}
+
+.cPassContainer h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #44413c;
+  margin: 0 0 0.5rem 0;
+}
+
+.cPassContainer input {
+  outline: none;
+  border-radius: 0.3rem;
+  border: none;
+  padding: 1rem 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  margin: 0 0 1rem 0;
 }

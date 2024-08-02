@@ -118,7 +118,6 @@ async function verifyAndFindUser(token) {
 const userUpdate = async (req, res) => {
   try {
     const token = req.cookies.romatoToken;
-
     if (!token) {
       return res
         .status(401)
@@ -126,7 +125,7 @@ const userUpdate = async (req, res) => {
     }
 
     const { fullName, phone } = req.body;
-
+    console.log(fullName, phone);
     if (!fullName && !phone) {
       return res.status(400).json({ message: "Atleast one field is required" });
     }
@@ -138,8 +137,8 @@ const userUpdate = async (req, res) => {
     const { _id } = verifiedUser;
 
     const updateUser = await User.findByIdAndUpdate(_id, {
-      fullName: fullName,
-      phone: phone,
+      fullName: fullName || undefined,
+      phone: phone || undefined,
     });
 
     return res
@@ -150,4 +149,87 @@ const userUpdate = async (req, res) => {
   }
 };
 
-module.exports = { userRegister, userLogin, userProfile, userUpdate };
+const changePassword = async (req, res) => {
+  try {
+    const token = req.cookies.romatoToken;
+    console.log(token);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Invalid Token or Token Not Found" });
+    }
+
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword && !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Old Password & New Password required" });
+    }
+
+    const verifiedUser = await jwt.verify(token, process.env.JWT_SECRET);
+    if (!verifiedUser) {
+      return res.status(401).json({ message: "Invalid Token" });
+    }
+
+    const { _id } = verifiedUser;
+
+    const findUser = await User.findById({ _id: _id });
+
+    if (!findUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const comparePassword = await bcrypt.compare(
+      oldPassword,
+      findUser.password
+    );
+
+    if (!comparePassword) {
+      return res.status(400).json({ message: "Provide Valid Old Password" });
+    }
+
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+
+    const udpateUser = await User.findByIdAndUpdate(findUser._id, {
+      password: hashPassword,
+    });
+    if (!udpateUser) {
+      throw new Error("Something went wrong");
+    }
+    return res.status(200).json({ message: "Password Change" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    const token = req.cookies.romatoToken;
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Invalid Token or Token Not Found" });
+    }
+
+    return res
+      .clearCookie("romatoToken", {
+        httpOnly: true,
+      })
+      .status(200)
+      .json({
+        message: "User Logout",
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  userRegister,
+  userLogin,
+  userProfile,
+  userUpdate,
+  logout,
+  changePassword,
+};
